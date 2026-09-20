@@ -1,0 +1,22 @@
+[package]
+name = "pass-manager"
+version = "0.1.0"
+edition = "2024"
+description = "An offline, encrypted password manager"
+license = "MIT"
+repository = "https://github.com/octavianmalopha13-tech/pass-manager"
+readme = "README.md"
+edition = "2024"
+
+[dependencies]
+clap = { version = "4.0", features = ["derive"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+aes-gcm = "0.10"
+argon2 = "0.5"
+rand = "0.8"
+rpassword = "7.0"
+base64 = "0.22"
+thiserror = "2.0"
+zeroize = "1.9.0"
+#argon2 = { version = "0.5", default-features = false, features = ["alloc", "password-hash"] }

@@ -1,0 +1,15 @@
+# Vault data — never commit
+/vault.enc
+/vault.enc.bak
+/vault.enc.tmp
+*.enc
+*.enc.bak
+*.enc.tmp
+
+# Rust
+/target
+
+# Editor / OS
+*.swp
+*~
+.DS_Store
