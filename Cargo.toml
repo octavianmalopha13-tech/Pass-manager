@@ -6,7 +6,6 @@ description = "An offline, encrypted password manager"
 license = "MIT"
 repository = "https://github.com/octavianmalopha13-tech/pass-manager"
 readme = "README.md"
-edition = "2024"
 
 [dependencies]
 clap = { version = "4.0", features = ["derive"] }
@@ -19,4 +18,8 @@ rpassword = "7.0"
 base64 = "0.22"
 thiserror = "2.0"
 zeroize = "1.9.0"
+vault-core = { version = "0.1.0", path = "../vault-core" }
 #argon2 = { version = "0.5", default-features = false, features = ["alloc", "password-hash"] }
+
+[profile.dev]
+lto = true

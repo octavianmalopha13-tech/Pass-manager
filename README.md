@@ -47,3 +47,6 @@ pass-manager gen --length 24 --no-symbols
 # Pipe a generated password straight into a new entry
 pass-manager gen --length 32 \
   | pass-manager add --site bank --user alice --password-stdin
+## Related
+
+- [`Vault-tui`](https://github.com/octavianmalopha13-tech/Vault-tui) — a terminal UI for the same vault format.
