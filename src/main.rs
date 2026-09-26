@@ -52,6 +52,39 @@ fn read_stdin_password() -> std::io::Result<String> {
     Ok(s)
 }
 
+fn cmd_rotate(vault_path: &str) -> vault_core::Result<()> {
+    check_vault_header(vault_path)?;
+
+    // 1. Load with the current password. Fails fast if wrong — we don't want
+    //    to prompt for a new password if the user can't prove the old one.
+    let old = Zeroizing::new(rpassword::prompt_password("Current master password: ")?);
+    let vault = load_vault(vault_path, &old)?;
+
+    // 2. New password, twice.
+    let new1 = Zeroizing::new(rpassword::prompt_password("New master password: ")?);
+    let new2 = Zeroizing::new(rpassword::prompt_password("Confirm new master password: ")?);
+
+    if *new1 != *new2 {
+        eprintln!("Passwords do not match");
+        std::process::exit(1);
+    }
+
+    if *old == *new1 {
+        eprintln!("New password is the same as the old one");
+        std::process::exit(1);
+    }
+
+    // 3. Re-save with the new password. save_vault generates a fresh salt,
+    //    derives a new key, encrypts, and writes atomically. The old vault
+    //    is copied to vault.enc.bak first, so nothing is lost on failure.
+    save_vault(vault_path, &vault, &new1)?;
+
+    println!("Master password rotated.");
+    println!("Old vault (encrypted with the old password) is at {}.bak", vault_path);
+    Ok(())
+}
+
+
 // ---- CLI definition ----
 
 #[derive(Parser)]
@@ -107,6 +140,8 @@ enum Commands {
         #[arg(long)]
         no_symbols: bool,
     },
+    /// Change the master password of an existing vault
+    Rotate,
 }
 
 // ---- main + run ----
@@ -258,6 +293,8 @@ fn run() -> vault_core::Result<()> {
                 pool.extend_from_slice(SYMBOLS);
             }
 
+        //Commands::Rotate => cmd_rotate(&cli.vault)?,       
+
             let mut rng = rand::thread_rng();
             let pw: String = (0..length)
                 .map(|_| pool[rng.gen_range(0..pool.len())] as char)
@@ -265,6 +302,8 @@ fn run() -> vault_core::Result<()> {
 
             println!("{}", pw);
         }
+     
+        Commands::Rotate => cmd_rotate(&cli.vault)?,
     }
 
     Ok(())
